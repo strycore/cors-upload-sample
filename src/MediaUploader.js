@@ -26,7 +26,7 @@ class MediaUploader {
    * @param {number} [options.offset] Offset
    * @param {number} [options.chunkSize] Chunk size
    * @param {string} [options.url] Destination URL to upload to
-   * @param {string} [options.baseUrl]
+   * @param {string} [options.baseUrl] Base URL of uploads
    * @param {function} [options.onComplete] Callback for when upload is complete
    * @param {function} [options.onProgress] Callback for status for the in-progress upload
    * @param {function} [options.onError] Callback if upload fails
@@ -207,7 +207,7 @@ class MediaUploader {
    * @private
    * @param {string} [id] File ID if replacing
    * @param {object} [params] Query parameters
-   * @param {string} baseUrl
+   * @param {string} baseUrl Base URL to build from
    * @return {string} URL
    */
   buildUrl(id, params, baseUrl) {

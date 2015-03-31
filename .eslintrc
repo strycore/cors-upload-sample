@@ -8,7 +8,10 @@
     "indent": [2, 2],
     "eol-last": false,
     "no-console": false,
-    "spaced-line-comment": ["always"]
+    "spaced-line-comment": ["always"],
+    "valid-jsdoc": [2, {
+      "requireReturn": false
+    }]
   },
   "env": {
     "browser": true,

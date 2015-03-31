@@ -42,9 +42,10 @@ class RetryHandler {
    * Get a random int in the range of min to max.
    * Used to add jitter to wait times.
    *
+   * @private
    * @param {number} min Lower bounds
    * @param {number} max Upper bounds
-   * @private
+   * @return {number} A random number
    */
   static getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);

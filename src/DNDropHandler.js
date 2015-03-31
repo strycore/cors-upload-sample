@@ -4,7 +4,7 @@ import MediaUploader from './MediaUploader.js';
 class DNDropHandler {
   /**
    * Wire up drag & drop listeners once page loads
-   * @param accessToken
+   * @param {string} accessToken Drive API token
    */
   constructor(accessToken) {
     this.accessToken = accessToken;
@@ -15,7 +15,7 @@ class DNDropHandler {
 
   /**
    *
-   * @param file
+   * @param {File} file The file to upload
    */
   upload(file) {
     var uploader = new MediaUploader({
@@ -33,8 +33,8 @@ class DNDropHandler {
   /**
    * Called when files are dropped on to the drop target. For each file,
    * uploads the content to Drive & displays the results when complete.
-   * @param {Event} evt
-   * @param {object} evt.dataTransfer
+   * @param {Event} evt The drop event
+   * @param {DataTransfer} [evt.dataTransfer] Dropped info
    */
   onFilesSelected(evt) {
     evt.stopPropagation();
@@ -48,8 +48,8 @@ class DNDropHandler {
 
   /**
    * Dragover handler to set the drop effect.
-   * @param {Event} evt
-   * @param {object} evt.dataTransfer
+   * @param {Event} evt The Drag event
+   * @param {DataTransfer} [evt.dataTransfer] Drag event info
    */
   onDragOver(evt) {
     evt.stopPropagation();
