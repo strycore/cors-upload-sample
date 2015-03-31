@@ -1,0 +1,29 @@
+{
+  "name": "cors-upload",
+  "version": "0.1.0",
+  "description": "Sample code for uploading files directly with vanilla Javascript (XHR/CORS). Try the [live version](http://googledrive.github.io/cors-upload-sample) and drag & drop files to upload them to Google Drive.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/googledrive/cors-upload-sample.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/googledrive/cors-upload-sample/issues"
+  },
+  "homepage": "https://github.com/googledrive/cors-upload-sample",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-eslint": "^0.8.0",
+    "gulp-sourcemaps": "^1.5.1",
+    "gulp-traceur": "^0.17.0"
+  },
+  "jscsConfig": {
+    "preset": "google"
+  }
+}
