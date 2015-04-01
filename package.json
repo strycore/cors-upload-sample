@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/googledrive/cors-upload-sample",
   "devDependencies": {
+    "browser-sync": "^2.5.2",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.5.2",
     "gulp-eslint": "^0.8.0",

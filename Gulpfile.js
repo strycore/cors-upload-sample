@@ -4,6 +4,7 @@ var es6ify = require('es6ify');
 var eslint = require('gulp-eslint');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
+var browserSync = require('browser-sync');
 
 var paths = {
   src: ["src/**/*.js"]
@@ -14,6 +15,15 @@ gulp.task('eslint', function() {
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failOnError());
+})
+
+gulp.task('browser-sync', function() {
+  browserSync({
+    server: {
+      baseDir: "."
+    },
+    port: 3004
+  })
 })
 
 gulp.task('default', ['eslint'], function () {
