@@ -23,13 +23,23 @@ gulp.task('browser-sync', function() {
       baseDir: "."
     },
     port: 3004
-  })
+  });
 })
 
-gulp.task('default', ['eslint'], function () {
+gulp.task('browserify', ['eslint'], function () {
   return browserify('./src/cors-upload.js')
     .transform(es6ify)
     .bundle()
     .pipe(source('cors-upload-bundle.js'))
     .pipe(gulp.dest('./dist/'));
 });
+
+gulp.task('reload', function(){
+  browserSync.reload();
+})
+
+gulp.task('watch', ['browserify', 'browser-sync'], function () {
+  gulp.watch(paths.src, ['eslint', 'reload']);
+})
+
+gulp.task('default', ['watch']);
