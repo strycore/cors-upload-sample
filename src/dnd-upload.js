@@ -3,18 +3,18 @@
 import MediaUploader from './MediaUploader.js';
 
 
-Polymer('dnd-upload', {
+class DNDUpload{
 
   /**
    * Connect component events
    */
-  attached: function() {
+  attached() {
     this.signedIn = false;
     this.accessToken = null;
     this.profile = null;
     this.addEventListener('dragover', this.onDragOver.bind(this), false);
     this.addEventListener('drop', this.onFilesSelected.bind(this), false);
-  },
+  }
 
   /**
    * Sign in callback
@@ -22,25 +22,25 @@ Polymer('dnd-upload', {
    * @param {object} ev.detail.user.B Google user details
    * @param {object} ev.detail.user.UT Google auth details
    */
-  signIn: function(ev) {
+  signIn(ev) {
     this.signedIn = true;
     this.accessToken = ev.detail.user.UT.access_token;
     this.profile = ev.detail.user.B;
-  },
+  }
 
   /**
    * Sign out callback
    */
-  signOut: function() {
+  signOut() {
     this.signedIn = false;
     this.accessToken = null;
-  },
+  }
 
   /**
    *
    * @param {File} file The file to upload
    */
-  upload: function(file) {
+  upload(file) {
     var self = this;
     var uploader = new MediaUploader({
       file: file,
@@ -52,7 +52,7 @@ Polymer('dnd-upload', {
       }
     });
     uploader.upload();
-  },
+  }
 
   /**
    * Called when files are dropped on to the drop target. For each file,
@@ -60,7 +60,7 @@ Polymer('dnd-upload', {
    * @param {Event} evt The drop event
    * @param {DataTransfer} [evt.dataTransfer] Dropped info
    */
-  onFilesSelected: function(evt) {
+  onFilesSelected(evt) {
     evt.stopPropagation();
     evt.preventDefault();
     var files = evt.dataTransfer.files;
@@ -68,16 +68,18 @@ Polymer('dnd-upload', {
       var file = files[i];
       this.upload(file);
     }
-  },
+  }
 
   /**
    * Dragover handler to set the drop effect.
    * @param {Event} evt The Drag event
    * @param {DataTransfer} [evt.dataTransfer] Drag event info
    */
-  onDragOver: function(evt) {
+  onDragOver(evt) {
     evt.stopPropagation();
     evt.preventDefault();
     evt.dataTransfer.dropEffect = 'copy';
   }
-});
+}
+
+Polymer('dnd-upload', new DNDUpload());
