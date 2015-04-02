@@ -1,0 +1,31 @@
+<link rel="import" href="../bower_components/google-signin/google-signin-aware.html"/>
+<polymer-element name="dnd-upload">
+  <template id="dnd-upload">
+    <style>
+      .drop-zone {
+        border: 2px dashed #bbb;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        padding: 25px;
+        text-align: center;
+        font: 20pt bold 'Helvetica';
+        color: #bbb;
+      }
+    </style>
+    <google-signin-aware
+        on-google-signin-aware-success="{{signIn}}"
+        on-google-signin-aware-failure="{{signOut}}"
+        on-google-signin-aware-signed-out="{{signOut}}"
+        ></google-signin-aware>
+    <link rel="stylesheet" href="dnd-upload.css"/>
+    <template if="{{signedIn}}">
+      <div class="drop-zone">Drop files here</div>
+    </template>
+    <div id="results"></div>
+  </template>
+
+  <script>
+    System.import("../src/dnd-upload.js");
+  </script>
+</polymer-element>

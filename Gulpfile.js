@@ -1,21 +1,24 @@
 /*eslint-env amd */
 var gulp = require('gulp');
-var es6ify = require('es6ify');
 var eslint = require('gulp-eslint');
-var browserify = require('browserify');
-var source = require('vinyl-source-stream');
 var browserSync = require('browser-sync');
 
 var paths = {
-  src: ["src/**/*.js"]
-}
+  src: ["src/**/*.js"],
+  html: ["src/**/*.html"]
+};
 
 gulp.task('eslint', function() {
   return gulp.src(paths.src)
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failOnError());
-})
+});
+
+gulp.task('html', function(){
+  return gulp.src(paths.html)
+    .pipe(gulp.dest('dist'));
+});
 
 gulp.task('browser-sync', function() {
   browserSync({
@@ -24,22 +27,14 @@ gulp.task('browser-sync', function() {
     },
     port: 3004
   });
-})
-
-gulp.task('browserify', ['eslint'], function () {
-  return browserify('./src/cors-upload.js')
-    .transform(es6ify)
-    .bundle()
-    .pipe(source('cors-upload-bundle.js'))
-    .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('reload', function(){
   browserSync.reload();
-})
+});
 
-gulp.task('watch', ['browserify', 'browser-sync'], function () {
+gulp.task('watch', ['html', 'browser-sync'], function () {
   gulp.watch(paths.src, ['eslint', 'reload']);
-})
+});
 
 gulp.task('default', ['watch']);
