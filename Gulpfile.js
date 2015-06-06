@@ -5,7 +5,7 @@ var browserSync = require('browser-sync');
 
 var paths = {
   src: ["src/**/*.js"],
-  html: ["src/**/*.html"]
+  html: ["src/**/*.html", "index.html"]
 };
 
 gulp.task('eslint', function() {
@@ -20,6 +20,9 @@ gulp.task('html', function(){
     .pipe(gulp.dest('dist'));
 });
 
+gulp.task('js-watch', ['eslint'], browserSync.reload);
+gulp.task('html-watch', ['html'], browserSync.reload);
+
 gulp.task('browser-sync', function() {
   browserSync({
     server: {
@@ -27,14 +30,8 @@ gulp.task('browser-sync', function() {
     },
     port: 3004
   });
+  gulp.watch(paths.src, ['js-watch']);
+  gulp.watch(paths.html, ['html-watch']);
 });
 
-gulp.task('reload', function(){
-  browserSync.reload();
-});
-
-gulp.task('watch', ['html', 'browser-sync'], function () {
-  gulp.watch(paths.src, ['eslint', 'reload']);
-});
-
-gulp.task('default', ['watch']);
+gulp.task('default', ['browser-sync']);
