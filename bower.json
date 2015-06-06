@@ -20,6 +20,7 @@
     "google-signin": "~1.0.0",
     "google-apis": "^1.0.0",
     "traceur": "~0.0.87",
-    "es6-module-loader": "~0.17.0"
+    "es6-module-loader": "~0.17.0",
+    "paper-toast": "PolymerElements/paper-toast#^1.0.0"
   }
 }

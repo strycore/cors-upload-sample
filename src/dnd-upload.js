@@ -22,14 +22,11 @@ Polymer({
 
   /**
    * Sign in callback
-   * @param {Event} ev Event data
-   * @param {object} ev.detail.user.B Google user details
-   * @param {object} ev.detail.user.UT Google auth details
+   * @param {object} response Response from Google signin
    */
-  signIn: function(ev) {
+  signIn: function(response) {
+    this.accessToken = response.detail.access_token;
     this.signedIn = true;
-    this.accessToken = ev.detail.user.UT.access_token;
-    this.profile = ev.detail.user.B;
   },
 
   /**
@@ -50,9 +47,16 @@ Polymer({
       file: file,
       token: this.accessToken,
       onComplete: function (data) {
+        console.log(data);
         var element = document.createElement("pre");
         element.appendChild(document.createTextNode(data));
         self.$.results.appendChild(element);
+      },
+      onError: function(response) {
+        var responseData = JSON.parse(response);
+        var toast = document.querySelector('#error-message');
+        toast.text = responseData.error.message;
+        toast.show();
       }
     });
     uploader.upload();

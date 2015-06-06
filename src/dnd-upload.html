@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/google-signin/google-signin-aware.html"/>
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <dom-module id="dnd-upload">
   <style>
     .drop-zone {
@@ -21,6 +22,7 @@
       <div class="drop-zone">Drop files here</div>
     </template>
     <div id="results"></div>
+    <paper-toast id='error-message'></paper-toast>
   </template>
 </dom-module>
 <script>
