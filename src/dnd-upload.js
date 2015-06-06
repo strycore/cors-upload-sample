@@ -3,17 +3,21 @@
 import MediaUploader from './MediaUploader.js';
 
 
-Polymer('dnd-upload', {
+Polymer({
+  is: 'dnd-upload',
 
-  /**
-   * Connect component events
-   */
-  attached: function() {
-    this.signedIn = false;
-    this.accessToken = null;
-    this.profile = null;
-    this.addEventListener('dragover', this.onDragOver.bind(this), false);
-    this.addEventListener('drop', this.onFilesSelected.bind(this), false);
+  listeners: {
+    dragover: 'onDragOver',
+    drop: 'onFilesSelected'
+  },
+
+  properties: {
+    signedIn: {
+      type: Boolean,
+      value: false
+    },
+    accessToken: String,
+    profile: String
   },
 
   /**

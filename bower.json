@@ -15,9 +15,10 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "0.5.5",
-    "webcomponentsjs": "^0.5",
-    "google-signin": "~0.3.0",
+    "webcomponentsjs": "~0.7.3",
+    "polymer": "~1.0.3",
+    "google-signin": "~1.0.0",
+    "google-apis": "^1.0.0",
     "traceur": "~0.0.87",
     "es6-module-loader": "~0.17.0"
   }
