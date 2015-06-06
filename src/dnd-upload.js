@@ -47,7 +47,6 @@ Polymer({
       file: file,
       token: this.accessToken,
       onComplete: function (data) {
-        console.log(data);
         var element = document.createElement("pre");
         element.appendChild(document.createTextNode(data));
         self.$.results.appendChild(element);
@@ -57,6 +56,11 @@ Polymer({
         var toast = document.querySelector('#error-message');
         toast.text = responseData.error.message;
         toast.show();
+      },
+      onProgress: function(ev) {
+        var percent = (ev.loaded / ev.total) * 100;
+        var progressBar = document.querySelector("#upload-progress");
+        progressBar.value = percent;
       }
     });
     uploader.upload();

@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/google-signin/google-signin-aware.html"/>
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 <dom-module id="dnd-upload">
   <style>
     .drop-zone {
@@ -12,6 +13,13 @@
       font: 20pt bold 'Helvetica';
       color: #bbb;
     }
+
+    paper-progress {
+      display: block;
+      width: 100%;
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
   </style>
   <template>
     <google-signin-aware
@@ -21,7 +29,9 @@
     <template is="dom-if" if="{{signedIn}}">
       <div class="drop-zone">Drop files here</div>
     </template>
+    <paper-progress value="0" min="0" max="100" id="upload-progress"></paper-progress>
     <div id="results"></div>
+
     <paper-toast id='error-message'></paper-toast>
   </template>
 </dom-module>
