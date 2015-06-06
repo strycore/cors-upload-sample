@@ -18,6 +18,7 @@
     "polymer": "0.5.5",
     "webcomponentsjs": "^0.5",
     "google-signin": "~0.3.0",
-    "traceur": "~0.0.87"
+    "traceur": "~0.0.87",
+    "es6-module-loader": "~0.17.0"
   }
 }
