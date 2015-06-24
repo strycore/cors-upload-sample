@@ -1,4 +1,3 @@
-<link rel="import" href="../bower_components/google-signin/google-signin-aware.html"/>
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 <dom-module id="dnd-upload">
@@ -22,13 +21,7 @@
     }
   </style>
   <template>
-    <google-signin-aware
-        on-google-signin-aware-success="signIn"
-        on-google-signin-aware-signed-out="signOut"
-        ></google-signin-aware>
-    <template is="dom-if" if="{{signedIn}}">
-      <div class="drop-zone">Drop files here</div>
-    </template>
+    <div class="drop-zone">Drop files here</div>
     <div>{{uploadUrl}}</div>
     <paper-progress value="0" min="0" max="100" id="upload-progress"></paper-progress>
     <div id="results"></div>

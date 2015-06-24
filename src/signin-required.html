@@ -1,0 +1,38 @@
+<link rel="import" href="../bower_components/google-signin/google-signin-aware.html"/>
+<dom-module id="signin-required">
+  <template>
+    <google-signin-aware
+      signed-in="{{signedIn}}"
+      on-google-signin-aware-success="signIn"
+      on-google-signin-aware-signed-out="signOut"
+      ></google-signin-aware>
+    <signin-required>
+    <template is="dom-if" if="{{signedIn}}">
+      <content></content>
+    </template>
+  </template>
+  <script>
+    Polymer({
+      is: 'dnd-upload',
+      properties: {
+        accessToken: String
+      },
+
+      /**
+      * Sign in callback
+      * @param {object} response Response from Google signin
+      */
+      signIn: function(response) {
+        this.accessToken = response.detail.access_token;
+      },
+
+      /**
+      * Sign out callback
+      */
+      signOut: function() {
+        this.accessToken = null;
+      }
+
+    });
+  </script>
+</dom-module>

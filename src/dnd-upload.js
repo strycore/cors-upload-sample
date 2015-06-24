@@ -12,33 +12,12 @@ Polymer({
   },
 
   properties: {
-    signedIn: {
-      type: Boolean,
-      value: false
-    },
     uploadUrl: {
       type: String,
       value: 'https://www.googleapis.com/upload/drive/v2/files/'
     },
     accessToken: String,
     profile: String
-  },
-
-  /**
-   * Sign in callback
-   * @param {object} response Response from Google signin
-   */
-  signIn: function(response) {
-    this.accessToken = response.detail.access_token;
-    this.signedIn = true;
-  },
-
-  /**
-   * Sign out callback
-   */
-  signOut: function() {
-    this.signedIn = false;
-    this.accessToken = null;
   },
 
   /**
