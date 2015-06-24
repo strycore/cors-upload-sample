@@ -57,9 +57,10 @@ class MediaUploader {
   }
 
   /**
-   * Initiate the upload.
+   * Initiate a resumable upload.
    */
   upload() {
+    console.log(this.url);
     var xhr = new XMLHttpRequest();
 
     xhr.open(this.httpMethod, this.url, true);
@@ -69,8 +70,13 @@ class MediaUploader {
     xhr.setRequestHeader('X-Upload-Content-Type', this.contentType);
 
     xhr.onload = function(e) {
+      console.log(e.target);
       if (e.target.status < 400) {
         this.url = e.target.getResponseHeader('Location');
+        if (!this.url) {
+          this.onUploadError({'target': {'response': "No URL provided"}});
+          return;
+        }
         this.sendFile();
       } else {
         this.onUploadError(e);
@@ -202,7 +208,7 @@ class MediaUploader {
   }
 
   /**
-   * Build the drive upload URL
+   * Build the complete upload URL
    *
    * @private
    * @param {string} [id] File ID if replacing
@@ -211,7 +217,7 @@ class MediaUploader {
    * @return {string} URL
    */
   buildUrl(id, params, baseUrl) {
-    var url = baseUrl || 'https://www.googleapis.com/upload/drive/v2/files/';
+    var url = baseUrl;
     if (id) {
       url += id;
     }

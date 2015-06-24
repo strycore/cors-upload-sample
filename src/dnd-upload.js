@@ -16,6 +16,10 @@ Polymer({
       type: Boolean,
       value: false
     },
+    uploadUrl: {
+      type: String,
+      value: 'https://www.googleapis.com/upload/drive/v2/files/'
+    },
     accessToken: String,
     profile: String
   },
@@ -45,6 +49,7 @@ Polymer({
     var self = this;
     var uploader = new MediaUploader({
       file: file,
+      baseUrl: this.uploadUrl,
       token: this.accessToken,
       onComplete: function (data) {
         var element = document.createElement("pre");
@@ -52,9 +57,20 @@ Polymer({
         self.$.results.appendChild(element);
       },
       onError: function(response) {
-        var responseData = JSON.parse(response);
+        var responseData;
+        var errorMessage;
+        try {
+          responseData = JSON.parse(response);
+          errorMessage = responseData.error.message;
+        } catch (e) {
+          errorMessage = response;
+          console.log(response);
+        }
+        if (!errorMessage) {
+          errorMessage = "Unhandled error while uploading document";
+        }
         var toast = document.querySelector('#error-message');
-        toast.text = responseData.error.message;
+        toast.text = errorMessage;
         toast.show();
       },
       onProgress: function(ev) {

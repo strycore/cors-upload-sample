@@ -29,6 +29,7 @@
     <template is="dom-if" if="{{signedIn}}">
       <div class="drop-zone">Drop files here</div>
     </template>
+    <div>{{uploadUrl}}</div>
     <paper-progress value="0" min="0" max="100" id="upload-progress"></paper-progress>
     <div id="results"></div>
 
