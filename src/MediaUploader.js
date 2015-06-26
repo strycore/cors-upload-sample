@@ -60,7 +60,6 @@ class MediaUploader {
    * Initiate a resumable upload.
    */
   upload() {
-    console.log(this.url);
     var xhr = new XMLHttpRequest();
 
     xhr.open(this.httpMethod, this.url, true);
@@ -70,7 +69,6 @@ class MediaUploader {
     xhr.setRequestHeader('X-Upload-Content-Type', this.contentType);
 
     xhr.onload = function(e) {
-      console.log(e.target);
       if (e.target.status < 400) {
         this.url = e.target.getResponseHeader('Location');
         if (!this.url) {
@@ -156,7 +154,7 @@ class MediaUploader {
   */
   onContentUploadSuccess(e) {
     var statusCode = e.target.status;
-    if (statusCode === 200 || statusCode === 201) {
+    if (statusCode === 200 || statusCode === 204) {
       this.onComplete(e.target.response);
     } else if (statusCode === 308) {
       this.extractRange(e.target);

@@ -12,7 +12,8 @@
     "spaced-line-comment": ["always"],
     "valid-jsdoc": [2, {
       "requireReturn": false
-    }]
+    }],
+    "dot-notation": false
   },
   "env": {
     "browser": true,

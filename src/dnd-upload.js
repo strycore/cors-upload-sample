@@ -6,11 +6,6 @@ import MediaUploader from './MediaUploader.js';
 Polymer({
   is: 'dnd-upload',
 
-  listeners: {
-    dragover: 'onDragOver',
-    drop: 'onFilesSelected'
-  },
-
   properties: {
     uploadUrl: {
       type: String,
@@ -18,6 +13,11 @@ Polymer({
     },
     accessToken: String,
     profile: String
+  },
+
+  listeners: {
+    dragover: 'onDragOver',
+    drop: 'onFilesSelected'
   },
 
   /**
@@ -43,18 +43,17 @@ Polymer({
           errorMessage = responseData.error.message;
         } catch (e) {
           errorMessage = response;
-          console.log(response);
         }
         if (!errorMessage) {
           errorMessage = "Unhandled error while uploading document";
         }
-        var toast = document.querySelector('#error-message');
+        var toast = self.$['error-message'];
         toast.text = errorMessage;
         toast.show();
       },
-      onProgress: function(ev) {
+      onProgress: function (ev) {
         var percent = (ev.loaded / ev.total) * 100;
-        var progressBar = document.querySelector("#upload-progress");
+        var progressBar = self.$['upload-progress'];
         progressBar.value = percent;
       }
     });
