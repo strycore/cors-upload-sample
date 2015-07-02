@@ -7,12 +7,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
-  <script src="./bower_components/traceur/traceur.js"></script>
-  <script src="./bower_components/es6-module-loader/dist/es6-module-loader-dev.js"></script>
-  <script s rc="./bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="./bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 
   <link rel="import" href="./bower_components/polymer/polymer.html"/>
   <link rel="import" href="./bower_components/google-signin/google-signin.html"/>
+  <link rel="import" href="../bower_components/google-signin/google-signin-aware.html"/>
   <link rel="import" href="./bower_components/paper-styles/paper-styles.html"/>
   <link rel="import" href="./src/dnd-upload.html"/>
   <link rel="import" href="./src/signin-required.html"/>
@@ -20,20 +19,45 @@
 <body unresolved>
   <div>
     <h4>Custom server upload</h4>
-    <dnd-upload
-      upload-url="http://localhost:8000/api/upload"
-    ></dnd-upload>
+    <dnd-upload upload-url="http://localhost:8000/api/upload"></dnd-upload>
   </div>
   <div>
     <h4>Google drive upload</h4>
-    <google-signin
-        client-id="833386620574-sjh6ut8n0kfemcmsk1pgm6p5iv0iud90.apps.googleusercontent.com"
-        scopes="https://www.googleapis.com/auth/drive.file"
-        raised="true">
-    </google-signin>
-    <signin-required>
-      <dnd-upload></dnd-upload>
-    </signin-required>
+
+    <template is="dom-bind" id="drive-upload">
+      <google-signin
+          client-id="833386620574-sjh6ut8n0kfemcmsk1pgm6p5iv0iud90.apps.googleusercontent.com"
+          scopes="https://www.googleapis.com/auth/drive.file"
+          raised="true">
+      </google-signin>
+      <google-signin-aware
+          signed-in="{{signedIn}}"
+          on-google-signin-aware-success="signIn"
+          on-google-signin-aware-signed-out="signOut"
+          ></google-signin-aware>
+      <template is="dom-if" if="{{signedIn}}">
+        <dnd-upload access-token="{{accessToken}}"></dnd-upload>
+      </template>
+    </template>
+
   </div>
+  <script>
+    (function(){
+      var driveUpload = document.querySelector('#drive-upload');
+
+      driveUpload.accessToken = null;
+      driveUpload.signedIn = false;
+
+      driveUpload.signIn = function(response) {
+        this.signedIn = true;
+        this.accessToken = response.detail.access_token;
+      };
+
+      driveUpload.signOut = function() {
+        this.signedIn = false;
+        this.accessToken = null;
+      }
+    })();
+  </script>
 </body>
 </html>

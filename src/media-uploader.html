@@ -1,0 +1,255 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html"/>
+<link rel="import" href="./retry-handler.html"/>
+
+<script>
+  Polymer({
+    is: "media-uploader",
+    properties: {
+      file: {
+        type: Object
+      },
+      contentType: {
+        type: String,
+        // value: this.file.type || 'application/octet-stream'
+        value: 'application/octet-stream'
+      },
+      metadata: {
+        type: Object,
+        value: {}
+      },
+      token: {
+        type: String
+      },
+
+      url: {
+        type: String
+      },
+      onComplete: {
+        type: Object,
+        value: function () {}
+      },
+      onError: {
+        type: Object,
+        value: function () {}
+      },
+      onProgress: {
+        type: Object,
+        value: function () {}
+      },
+      offset: {
+        type: Number,
+        value: 0
+      },
+      chunckSize: {
+        type: Number,
+        value: 0
+      },
+      httpMethod: {
+        type: String,
+        computed: '_getHttpMethod(fileId)',
+        value: "POST"
+      },
+      fileId: {
+        type: String
+      }
+    },
+
+    ready: function () {
+      this.retryHandler = document.createElement('retry-handler');
+      if (this.url) {
+        this.url = this._getDefaultUrl();
+      }
+    },
+
+    _getDefaultUrl: function(options) {
+      var params = options.params || {};
+      params.uploadType = 'resumable';
+      return this.buildUrl(options.fileId, params, options.baseUrl);
+    },
+
+    _getHttpMethod: function(fileId) {
+      return fileId ? 'PUT' : 'POST';
+    },
+
+    /**
+     * Initiate a resumable upload.
+     */
+    upload: function() {
+      var xhr = document.createElement('iron-ajax');
+      xhr.method = this.httpMethod;
+      xhr.url = this.url;
+      xhr.contentType = 'application/json';
+      xhr.headers = {
+        'Authorization': 'Bearer ' + this.token,
+        'X-Upload-Content-Length': this.file.size.toString(),
+        'X-Upload-Content-Type': this.contentType
+      };
+      xhr.body = JSON.stringify({
+        'title': this.file.name,
+        'mimeType': this.contentType
+      });
+      xhr.addEventListener('response', function(request) {
+        var response = request.detail;
+        if (response.xhr.status < 400) {
+          var headers = response.xhr.getAllResponseHeaders();
+          this.url = response.xhr.getResponseHeader('Location');
+          if (!this.url) {
+            this.onUploadError("No URL provided");
+            return;
+          }
+          this.sendFile();
+        } else {
+          this.onUploadError(e);
+        }
+      }.bind(this));
+      xhr.addEventListener('error', this.onUploadError);
+      xhr.generateRequest();
+    },
+
+    /**
+     * Send the actual file content.
+     *
+     * @private
+     */
+    sendFile: function() {
+      var content = this.file;
+      var end = this.file.size;
+
+      if (this.offset || this.chunkSize) {
+        // Only bother to slice the file if we're either resuming or uploading in chunks
+        if (this.chunkSize) {
+          end = Math.min(this.offset + this.chunkSize, this.file.size);
+        }
+        content = content.slice(this.offset, end);
+      }
+
+      var xhr = document.createElement('iron-ajax');
+
+      xhr.method = 'PUT';
+      xhr.url = this.url;
+      xhr.body = this.file;
+      xhr.contentType = this.contentType;
+      xhr.headers = {
+        'Content-Range': "bytes " + this.offset + "-" + (end - 1) + "/" + this.file.size,
+        'X-Upload-Content-Type': this.file.type
+      };
+      //xhr.upload.addEventListener('progress', this.onProgress);
+      xhr.addEventListener('response', this.onContentUploadSuccess.bind(this));
+      xhr.addEventListener('error', this.onContentUploadError.bind(this));
+      var request = xhr.generateRequest();
+      this.progress = request.progress;
+    },
+
+    /**
+     * Query for the state of the file for resumption.
+     *
+     * @private
+     */
+    resume: function() {
+      var xhr = document.createElement('iron-ajax');
+      xhr.method = 'PUT';
+      xhr.url = this.url;
+      xhr.headers = {
+        'Content-Range': 'bytes */' + this.file.size,
+        'X-Upload-Content-Type': this.file.type
+      };
+      xhr.addEventListener('response', this.onContentUploadSuccess.bind(this));
+      xhr.addEventListener('error', this.onContentUploadError.bind(this));
+      var request = xhr.generateRequest();
+      request.onProgress = this.onProgress;
+    },
+
+    /**
+     * Extract the last saved range if available in the request.
+     *
+     * @param {XMLHttpRequest} xhr Request object
+     */
+    extractRange: function(xhr) {
+      var range = xhr.getResponseHeader('Range');
+      if (range) {
+        this.offset = parseInt(range.match(/\d+/g).pop(), 10) + 1;
+      }
+    },
+
+    /**
+     * Handle successful responses for uploads. Depending on the context,
+     * may continue with uploading the next chunk of the file or, if complete,
+     * invokes the caller's callback.
+     *
+     * @private
+     * @param {object} e XHR event
+     */
+    onContentUploadSuccess: function(request) {
+      var response = request.detail;
+      var statusCode = response.xhr.status;
+      if (statusCode === 200 || statusCode === 204) {
+        this.onComplete(response.xhr.response);
+      } else if (statusCode === 308) {
+        this.extractRange(response.target);
+        this.retryHandler.reset();
+        this.sendFile();
+      } else {
+        console.error("Unhandled code " + statusCode);
+        console.error(request.target);
+      }
+    },
+
+    /**
+     * Handles errors for uploads. Either retries or aborts depending
+     * on the error.
+     *
+     * @private
+     * @param {object} e XHR event
+     */
+    onContentUploadError: function(response) {
+      this.onError(response.detail.error.message);
+    },
+
+    /**
+     * Handles errors for the initial request.
+     *
+     * @private
+     * @param {object} e XHR event
+     */
+    onUploadError: function(e) {
+      this.onError(e); // TODO - Retries for initial upload
+    },
+
+    /**
+     * Construct a query string from a hash/object
+     *
+     * @private
+     * @param {object} [params] Key/value pairs for query string
+     * @return {string} query string
+     */
+    buildQuery: function(params) {
+      params = params || {};
+      return Object.keys(params).map(function(key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+      }).join('&');
+    },
+
+    /**
+     * Build the complete upload URL
+     *
+     * @private
+     * @param {string} [id] File ID if replacing
+     * @param {object} [params] Query parameters
+     * @param {string} baseUrl Base URL to build from
+     * @return {string} URL
+     */
+    buildUrl: function(id, params, baseUrl) {
+      var url = baseUrl;
+      if (id) {
+        url += id;
+      }
+      var query = this.buildQuery(params);
+      if (query) {
+        url += '?' + query;
+      }
+      return url;
+    }
+  })
+
+</script>
