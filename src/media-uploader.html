@@ -134,11 +134,10 @@
         'Content-Range': "bytes " + this.offset + "-" + (end - 1) + "/" + this.file.size,
         'X-Upload-Content-Type': this.file.type
       };
-      //xhr.upload.addEventListener('progress', this.onProgress);
       xhr.addEventListener('response', this.onContentUploadSuccess.bind(this));
       xhr.addEventListener('error', this.onContentUploadError.bind(this));
       var request = xhr.generateRequest();
-      this.progress = request.progress;
+      request.xhr.upload.addEventListener('progress', this.onProgress);
     },
 
     /**

@@ -66,7 +66,6 @@
       };
 
       uploader.onError = function (response) {
-        console.log('ERROR');
         console.log(response);
         var responseData;
         var errorMessage;
@@ -83,11 +82,11 @@
         toast.text = errorMessage;
         toast.show();
       };
-      uploader.addEventListener('progress', function (ev) {
+      uploader.onProgress = function (ev) {
         var percent = (ev.loaded / ev.total) * 100;
         var progressBar = self.$['upload-progress'];
         progressBar.value = percent;
-      });
+      };
       uploader.upload();
     },
 
