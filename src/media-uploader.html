@@ -11,7 +11,6 @@
       },
       contentType: {
         type: String,
-        // value: this.file.type || 'application/octet-stream'
         value: 'application/octet-stream'
       },
       metadata: {
@@ -21,7 +20,10 @@
       token: {
         type: String
       },
-
+      authenticateHeader: {
+        type: String,
+        value: 'Bearer'
+      },
       url: {
         type: String
       },
@@ -76,12 +78,13 @@
      * Initiate a resumable upload.
      */
     upload: function() {
+      this.contentType =  this.file.type || 'application/octet-stream';
       var xhr = document.createElement('iron-ajax');
       xhr.method = this.httpMethod;
       xhr.url = this.url;
       xhr.contentType = 'application/json';
       xhr.headers = {
-        'Authorization': 'Bearer ' + this.token,
+        'Authorization': this.authenticateHeader + ' ' + this.token,
         'X-Upload-Content-Length': this.file.size.toString(),
         'X-Upload-Content-Type': this.contentType
       };
@@ -156,7 +159,7 @@
       xhr.addEventListener('response', this.onContentUploadSuccess.bind(this));
       xhr.addEventListener('error', this.onContentUploadError.bind(this));
       var request = xhr.generateRequest();
-      request.onProgress = this.onProgress;
+      request.xhr.upload.addEventListener('progress', this.onProgress);
     },
 
     /**

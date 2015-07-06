@@ -40,6 +40,10 @@
         value: 'https://www.googleapis.com/upload/drive/v2/files/?uploadType=resumable'
       },
       accessToken: String,
+      authenticateHeader: {
+        type: String,
+        value: 'Bearer'
+      },
       profile: String
     },
 
@@ -59,6 +63,7 @@
       uploader.url = this.uploadUrl;
       uploader.file = file;
       uploader.token = this.accessToken;
+      uploader.authenticateHeader = this.authenticateHeader;
       uploader.onComplete = function (data) {
         var element = document.createElement("pre");
         element.appendChild(document.createTextNode(data));

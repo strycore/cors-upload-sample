@@ -11,18 +11,42 @@
 
   <link rel="import" href="./bower_components/polymer/polymer.html"/>
   <link rel="import" href="./bower_components/google-signin/google-signin.html"/>
-  <link rel="import" href="../bower_components/google-signin/google-signin-aware.html"/>
+  <link rel="import" href="./bower_components/google-signin/google-signin-aware.html"/>
   <link rel="import" href="./bower_components/paper-styles/paper-styles.html"/>
+  <link rel="import" href="./bower_components/paper-styles/demo-pages.html"/>
+  <link rel="import" href="./bower_components/iron-form/iron-form.html"/>
+  <link rel="import" href="./bower_components/paper-input/paper-input.html"/>
+  <link rel="import" href="./bower_components/paper-button/paper-button.html"/>
+  <link rel="import" href="./bower_components/paper-material/paper-material.html"/>
   <link rel="import" href="./src/dnd-upload.html"/>
 </head>
 <body unresolved>
-  <div>
-    <h4>Custom server upload</h4>
-    <dnd-upload upload-url="http://localhost:8000/api/upload"></dnd-upload>
-  </div>
-  <div>
-    <h4>Google drive upload</h4>
+<div>
+  <h4>Custom server upload</h4>
+  <template is="dom-bind" id="rest-upload">
+    <template is="dom-if" if="{{!signedIn}}">
+      <div class="vertical-section">
+        <form is="iron-form" id="rest-token-form"
+              content-type="application/json"
+              method="post"
+              action="http://localhost:8000/api/token">
+          <paper-input label="Login" name="username"></paper-input>
+          <paper-input label="Password" name="password" type="password"></paper-input>
+          <paper-button raised onclick="login(event)">Log in</paper-button>
+        </form>
+      </div>
+    </template>
+    <template is="dom-if" if="{{signedIn}}">
+      <dnd-upload upload-url="http://localhost:8000/api/upload"
+                  authenticate-header="Token"
+                  access-token="{{accessToken}}"></dnd-upload>
 
+    </template>
+  </template>
+
+  <h4>Google drive upload</h4>
+
+  <div class="vertical-section">
     <template is="dom-bind" id="drive-upload">
       <google-signin
           client-id="833386620574-sjh6ut8n0kfemcmsk1pgm6p5iv0iud90.apps.googleusercontent.com"
@@ -38,23 +62,40 @@
         <dnd-upload access-token="{{accessToken}}"></dnd-upload>
       </template>
     </template>
-
   </div>
-  <script>
+
+</div>
+<script>
+
+    function login (event) {
+      Polymer.dom(event).localTarget.parentElement.submit();
+    }
+
     (function(){
       var driveUpload = document.querySelector('#drive-upload');
 
       driveUpload.accessToken = null;
       driveUpload.signedIn = false;
 
-      driveUpload.signIn = function(response) {
+      /** @param event.detail.access_token The access token returned by Google*/
+      driveUpload.signIn = function(event) {
         this.signedIn = true;
-        this.accessToken = response.detail.access_token;
+        this.accessToken = event.detail.access_token;
       };
 
       driveUpload.signOut = function() {
         this.signedIn = false;
         this.accessToken = null;
+      };
+
+      var restUpload = document.querySelector('#rest-upload');
+      restUpload.signedIn = false;
+      var restTokenForm = Polymer.dom(restUpload.$$('#rest-token-form'));
+      restTokenForm.node.addEventListener('iron-form-response', onLoginResponse);
+
+      function onLoginResponse(event) {
+        restUpload.accessToken = event.detail.token;
+        restUpload.signedIn = true;
       }
     })();
   </script>
