@@ -39,7 +39,6 @@
       <dnd-upload upload-url="http://localhost:8000/api/upload"
                   authenticate-header="Token"
                   access-token="{{accessToken}}"></dnd-upload>
-
     </template>
     </div>
   </template>
@@ -63,7 +62,6 @@
       </template>
     </template>
   </div>
-
 </div>
 <script>
 
@@ -89,12 +87,20 @@
       };
 
       var restUpload = document.querySelector('#rest-upload');
-      restUpload.signedIn = false;
+      restUpload.accessToken = localStorage.getItem('restupload-token');
+      if(restUpload.accessToken) {
+        restUpload.signedIn = true;
+      } else {
+        restUpload.signedIn = false;
+        console.log('access token: ', restUpload.accessToken);
+      }
+
       var restTokenForm = Polymer.dom(restUpload.$$('#rest-token-form'));
       restTokenForm.node.addEventListener('iron-form-response', onLoginResponse);
 
       function onLoginResponse(event) {
         restUpload.accessToken = event.detail.token;
+        localStorage.setItem('restupload-token', restUpload.accessToken);
         restUpload.signedIn = true;
       }
     })();
