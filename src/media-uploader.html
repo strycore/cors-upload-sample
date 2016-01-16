@@ -37,7 +37,7 @@
       },
       onProgress: {
         type: Object,
-        value: function () {}
+        value: function (e) {}
       },
       offset: {
         type: Number,
@@ -95,7 +95,6 @@
       xhr.addEventListener('response', function(request) {
         var response = request.detail;
         if (response.xhr.status < 400) {
-          var headers = response.xhr.getAllResponseHeaders();
           this.url = response.xhr.getResponseHeader('Location');
           if (!this.url) {
             this.onUploadError("No URL provided");
@@ -131,7 +130,7 @@
 
       xhr.method = 'PUT';
       xhr.url = this.url;
-      xhr.body = this.file;
+      xhr.body = content;
       xhr.contentType = this.contentType;
       xhr.headers = {
         'Content-Range': "bytes " + this.offset + "-" + (end - 1) + "/" + this.file.size,
@@ -180,10 +179,10 @@
      * invokes the caller's callback.
      *
      * @private
-     * @param {object} e XHR event
+     * @param {object} event XHR event
      */
-    onContentUploadSuccess: function(request) {
-      var response = request.detail;
+    onContentUploadSuccess: function(event) {
+      var response = event.detail;
       var statusCode = response.xhr.status;
       if (statusCode === 200 || statusCode === 204) {
         this.onComplete(response.xhr.response);
@@ -193,7 +192,7 @@
         this.sendFile();
       } else {
         console.error("Unhandled code " + statusCode);
-        console.error(request.target);
+        console.error(event.target);
       }
     },
 
@@ -202,20 +201,20 @@
      * on the error.
      *
      * @private
-     * @param {object} e XHR event
+     * @param {object} event XHR event
      */
-    onContentUploadError: function(response) {
-      this.onError(response.detail.error.message);
+    onContentUploadError: function(event) {
+      this.onError(event.detail.error.message);
     },
 
     /**
      * Handles errors for the initial request.
      *
      * @private
-     * @param {object} e XHR event
+     * @param {object} event XHR event
      */
-    onUploadError: function(e) {
-      this.onError(e); // TODO - Retries for initial upload
+    onUploadError: function(event) {
+      this.onError(event); // TODO - Retries for initial upload
     },
 
     /**
@@ -236,7 +235,7 @@
      * Build the complete upload URL
      *
      * @private
-     * @param {string} [id] File ID if replacing
+     * @param {properties.fileId|{type}} [id] File ID if replacing
      * @param {object} [params] Query parameters
      * @param {string} baseUrl Base URL to build from
      * @return {string} URL

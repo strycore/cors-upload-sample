@@ -24,8 +24,8 @@
 <div>
   <h4>Custom server upload</h4>
   <template is="dom-bind" id="rest-upload">
+    <div class="vertical-section">
     <template is="dom-if" if="{{!signedIn}}">
-      <div class="vertical-section">
         <form is="iron-form" id="rest-token-form"
               content-type="application/json"
               method="post"
@@ -34,7 +34,6 @@
           <paper-input label="Password" name="password" type="password"></paper-input>
           <paper-button raised onclick="login(event)">Log in</paper-button>
         </form>
-      </div>
     </template>
     <template is="dom-if" if="{{signedIn}}">
       <dnd-upload upload-url="http://localhost:8000/api/upload"
@@ -42,6 +41,7 @@
                   access-token="{{accessToken}}"></dnd-upload>
 
     </template>
+    </div>
   </template>
 
   <h4>Google drive upload</h4>
